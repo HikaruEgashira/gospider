@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -24,7 +24,7 @@ func ParseRobots(site *url.URL, crawler *Crawler, c *colly.Collector, wg *sync.W
 	}
 	if resp.StatusCode == 200 {
 		Logger.Infof("Found robots.txt: %s", robotsURL)
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return
 		}
