@@ -3,14 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
-	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"net/url"
 	"os"
 	"strings"
 	"sync"
 
-	"github.com/jaeles-project/gospider/core"
+	jsoniter "github.com/json-iterator/go"
+
+	"github.com/HikaruEgashira/gospider/core"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -34,14 +35,14 @@ func main() {
 	commands.Flags().StringP("blacklist", "", "", "Blacklist URL Regex")
 	commands.Flags().StringP("whitelist", "", "", "Whitelist URL Regex")
 	commands.Flags().StringP("whitelist-domain", "", "", "Whitelist Domain")
-    commands.Flags().StringP("filter-length", "L", "", "Turn on length filter")
+	commands.Flags().StringP("filter-length", "L", "", "Turn on length filter")
 
 	commands.Flags().IntP("threads", "t", 1, "Number of threads (Run sites in parallel)")
 	commands.Flags().IntP("concurrent", "c", 5, "The number of the maximum allowed concurrent requests of the matching domains")
 	commands.Flags().IntP("depth", "d", 1, "MaxDepth limits the recursion depth of visited URLs. (Set it to 0 for infinite recursion)")
 	commands.Flags().IntP("delay", "k", 0, "Delay is the duration to wait before creating a new request to the matching domains (second)")
-	commands.Flags().IntP("random-delay", "K", 0, "RandomDelay is the extra randomized duration to wait added to Delay before creating a new request (second)")
-	commands.Flags().IntP("timeout", "m", 10, "Request timeout (second)")
+	commands.Flags().IntP("random-delay", "K", 1, "RandomDelay is the extra randomized duration to wait added to Delay before creating a new request (second)")
+	commands.Flags().IntP("timeout", "m", 5, "Request timeout (second)")
 
 	commands.Flags().BoolP("base", "B", false, "Disable all and only use HTML content")
 	commands.Flags().BoolP("js", "", true, "Enable linkfinder in javascript file")
@@ -50,7 +51,7 @@ func main() {
 	commands.Flags().BoolP("other-source", "a", false, "Find URLs from 3rd party (Archive.org, CommonCrawl.org, VirusTotal.com, AlienVault.com)")
 	commands.Flags().BoolP("include-subs", "w", false, "Include subdomains crawled from 3rd party. Default is main domain")
 	commands.Flags().BoolP("include-other-source", "r", false, "Also include other-source's urls (still crawl and request)")
-    commands.Flags().BoolP("subs", "", false, "Include subdomains")
+	commands.Flags().BoolP("subs", "", false, "Include subdomains")
 
 	commands.Flags().BoolP("debug", "", false, "Turn on debug mode")
 	commands.Flags().BoolP("json", "", false, "Enable JSON output")
@@ -58,9 +59,8 @@ func main() {
 	commands.Flags().BoolP("quiet", "q", false, "Suppress all the output and only show URL")
 	commands.Flags().BoolP("no-redirect", "", false, "Disable redirect")
 	commands.Flags().BoolP("version", "", false, "Check version")
-    commands.Flags().BoolP("length", "l", false, "Turn on length")
-    commands.Flags().BoolP("raw", "R", false, "Enable raw output")
-
+	commands.Flags().BoolP("length", "l", false, "Turn on length")
+	commands.Flags().BoolP("raw", "R", false, "Enable raw output")
 
 	commands.Flags().SortFlags = false
 	if err := commands.Execute(); err != nil {

@@ -2,28 +2,18 @@
 
 **GoSpider** - Fast web spider written in Go
 
-## Painless integrate Gospider into your recon workflow?
-
-<p align="center">
-  <img alt="OsmedeusEngine" src="https://raw.githubusercontent.com/osmedeus/assets/main/logo-transparent.png" height="200" />
-  <p align="center">
-    this project was part of Osmedeus Engine. Check out how it was integrated at <a href="https://twitter.com/OsmedeusEngine">@OsmedeusEngine</a>
-  </p>
-</p>
-
-
 ## Installation
 
 ### GO install
 ```
-GO111MODULE=on go install github.com/jaeles-project/gospider@latest
+GO111MODULE=on go install github.com/HikaruEgashira/gospider@latest
 ```
 
 ### Docker
 
 ```bash
 # Clone the repo
-git clone https://github.com/jaeles-project/gospider.git
+git clone https://github.com/HikaruEgashira/gospider.git
 # Build the contianer
 docker build -t gospider:latest gospider
 # Run the container
