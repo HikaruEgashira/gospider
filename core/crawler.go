@@ -299,6 +299,7 @@ func NewCrawler(site *url.URL, cmd *cobra.Command) *Crawler {
 		jsSet:               stringset.NewStringFilter(),
 		formSet:             stringset.NewStringFilter(),
 		awsSet:              stringset.NewStringFilter(),
+		piiSet:              stringset.NewStringFilter(),
 		filterLength_slice:  filterLength_slice,
 	}
 }
@@ -427,6 +428,38 @@ func (crawler *Crawler) Start(linkfinder bool) {
 			}
 		}
 
+	})
+
+	// find PII
+	crawler.C.OnHTML("body", func(e *colly.HTMLElement) {
+		urlString := e.Request.AbsoluteURL(e.Attr("href"))
+		urlString = FixUrl(crawler.site, urlString)
+
+		// Convert HTML to readable text using the html2text package
+		// text := html2text.HTML2Text(e.Text)
+
+		// find PII
+		pii := GetPII(e.Text)
+		for _, p := range pii {
+			if crawler.piiSet != nil && !crawler.piiSet.Duplicate(p) {
+				outputFormat := fmt.Sprintf("[url] - [pii] %s - %s", urlString, p)
+				if crawler.JsonOutput {
+					sout := SpiderOutput{
+						Input:      crawler.Input,
+						Source:     "body",
+						OutputType: "pii",
+						Output:     p,
+					}
+					if data, err := jsoniter.MarshalToString(sout); err == nil {
+						outputFormat = data
+					}
+				}
+				fmt.Println(outputFormat)
+				if crawler.Output != nil {
+					crawler.Output.WriteToFile(outputFormat)
+				}
+			}
+		}
 	})
 
 	// Handle js files
@@ -764,4 +797,21 @@ func (crawler *Crawler) setupLinkFinder() {
 			}
 		}
 	})
+}
+
+func GetPII(text string) []string {
+	// 電話番号を抽出するための正規表現
+	phoneRegex := regexp.MustCompile(`\d{2,4}-\d{2,4}-\d{4}`)
+
+	// メールアドレスを抽出するための正規表現
+	emailRegex := regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`)
+
+	// 電話番号とメールアドレスを抽出
+	phones := phoneRegex.FindAllString(text, -1)
+	emails := emailRegex.FindAllString(text, -1)
+
+	// 電話番号とメールアドレスを結合
+	pii := append(phones, emails...)
+
+	return pii
 }
